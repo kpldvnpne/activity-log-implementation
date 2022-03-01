@@ -4,10 +4,8 @@ import { DotsHorizontalIcon, AdjustmentsIcon } from "@heroicons/react/solid";
 function App(): React.ReactElement {
   return (
     <div style={{ backgroundColor: "#F5F6F7" }} className="h-screen font-sans">
-      <div className="w-4/6 mx-auto">
-        <Spacer />
+      <div className="w-4/6 mx-auto space-y-6">
         <SearchInput />
-        <Spacer />
         <ActivityLogHeader />
       </div>
     </div>
@@ -61,10 +59,6 @@ function Switch() {
 
 function ActivityLogTitle() {
   return <h2 className="text-3xl font-bold">Activity logs</h2>;
-}
-
-function Spacer() {
-  return <div className="h-10" />;
 }
 
 function SearchInput() {
