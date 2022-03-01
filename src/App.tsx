@@ -1,18 +1,125 @@
-import React from "react";
-import { DotsHorizontalIcon, AdjustmentsIcon } from "@heroicons/react/solid";
+import React, { ReactNode } from "react";
+import {
+  DotsHorizontalIcon,
+  AdjustmentsIcon,
+  PlusIcon,
+} from "@heroicons/react/solid";
 
 function App(): React.ReactElement {
   return (
     <div style={{ backgroundColor: "#F5F6F7" }} className="h-screen font-sans">
-      <div className="w-4/6 mx-auto space-y-6">
+      <div className="w-5/6 xl:w-4/6  mx-auto space-y-6 py-4">
         <SearchInput />
         <ActivityLogHeader />
+        <ActivityLog
+          icon={
+            <ActivityIcon>
+              <PlusIcon />
+            </ActivityIcon>
+          }
+          body={
+            <FileAddedActivity
+              personName="Steve Matthew"
+              fileName="file_documents.csv"
+            />
+          }
+        />
       </div>
     </div>
   );
 }
 
 export default App;
+
+interface ActivityLogProps {
+  icon: ReactNode;
+  body: ReactNode;
+}
+
+function ActivityLog({ icon, body }: ActivityLogProps) {
+  return (
+    <div className="flex flex-row items-start space-x-10">
+      {icon}
+      {body}
+    </div>
+  );
+}
+
+interface FileAddedActivityProps {
+  personName: string;
+  fileName: string;
+}
+
+function FileAddedActivity({ personName, fileName }: FileAddedActivityProps) {
+  return (
+    <div className="flex flex-row items-center justify-center space-x-3">
+      <AvatarOfName name={personName} />
+      <p>
+        <Highlighted>{personName}</Highlighted>
+        <span className="text-gray-400 font-regular"> added </span>
+        <Highlighted>{fileName}</Highlighted>
+      </p>
+      <DotSeparator />
+      <TimeOfActivity days={2} />
+    </div>
+  );
+}
+
+interface TimeOfActivityProps {
+  days: number;
+}
+
+function TimeOfActivity({ days }: TimeOfActivityProps) {
+  const isPlural = days >= 1;
+  const daysNounPhrase = isPlural ? "days" : "day";
+  return (
+    <span className="text-gray-400 font-medium text-sm">
+      {days} {daysNounPhrase} ago
+    </span>
+  );
+}
+
+function DotSeparator() {
+  return <div className="rounded-full w-1 h-1 bg-gray-400" />;
+}
+
+interface HighlightedProps {
+  children: ReactNode;
+}
+
+function Highlighted({ children }: HighlightedProps) {
+  return <span className="font-semibold text-lg">{children}</span>;
+}
+
+interface NameAvatarProps {
+  name: string;
+}
+
+function AvatarOfName({ name }: NameAvatarProps) {
+  const nameInitial = name[0];
+  return (
+    <div className="rounded-full h-10 w-10 bg-blue-400 text-gray-700 flex items-center justify-center text-lg">
+      {nameInitial}
+    </div>
+  );
+}
+
+interface ActivityIconProps {
+  important?: boolean;
+  children: ReactNode;
+}
+
+function ActivityIcon({ children, important = false }: ActivityIconProps) {
+  const textColorClass = important ? "text-white" : "text-gray-700";
+  const backgroundColorClass = important ? "bg-blue-600" : "bg-gray-300";
+  return (
+    <div
+      className={`rounded-full ${backgroundColorClass} ${textColorClass} h-10 w-10 p-2`}
+    >
+      {children}
+    </div>
+  );
+}
 
 function ActivityLogHeader() {
   return (
