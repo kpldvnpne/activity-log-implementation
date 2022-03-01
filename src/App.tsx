@@ -29,12 +29,12 @@ function SearchInput() {
 
 function Actions() {
   return (
-    <div className="text-gray-400 space-x-2 flex flex-row items-center content-center absolute right-5">
+    <div className="text-gray-400 space-x-3 flex flex-row items-baseline content-center absolute right-5">
       <span>@</span>
       <span className="font-bold">B</span>
       <span className="italic font-serif">I</span>
       <span className="underline">U</span>
-      <DotsHorizontalIcon className="h-6 w-6" />
+      <DotsHorizontalIcon className="h-6 w-6 self-center" />
     </div>
   );
 }
