@@ -3,6 +3,7 @@ import {
   DotsHorizontalIcon,
   AdjustmentsIcon,
   PlusIcon,
+  CalendarIcon,
 } from "@heroicons/react/solid";
 
 function App(): React.ReactElement {
@@ -24,12 +25,51 @@ function App(): React.ReactElement {
             />
           }
         />
+        <ActivityLog
+          icon={
+            <ActivityIcon important>
+              <CalendarIcon />
+            </ActivityIcon>
+          }
+          body={
+            <Card>
+              <div className="p-4 flex flex-row justify-between">
+                <div className="border-l-2 border-l-yellow-500 py-2 pl-6">
+                  <h2 className="font-semibold">Design Review with Timeless</h2>
+                  <p className="text-gray-400">
+                    10:00 - 11:00 AM, Mumbai Maharastra
+                  </p>
+                </div>
+                <div className="flex flex-row space-x-2 items-center">
+                  <div className="flex flex-row -space-x-3">
+                    <AvatarOfNameWithBorder name="Brianna Clinton" />
+                    <AvatarOfNameWithBorder name="Melissa Pinto" />
+                    <AvatarOfNameWithBorder name="Olivia Emmanuel" />
+                  </div>
+                  <span className="text-gray-600">and 4 others</span>
+                </div>
+              </div>
+            </Card>
+          }
+        />
       </div>
     </div>
   );
 }
 
 export default App;
+
+interface CardProps {
+  children: ReactNode;
+}
+
+function Card({ children }: CardProps) {
+  return (
+    <div className="bg-white rounded-3xl border-2 border-gray-200 w-full">
+      {children}
+    </div>
+  );
+}
 
 interface ActivityLogProps {
   icon: ReactNode;
@@ -56,13 +96,21 @@ function FileAddedActivity({ personName, fileName }: FileAddedActivityProps) {
       <AvatarOfName name={personName} />
       <p>
         <Highlighted>{personName}</Highlighted>
-        <span className="text-gray-400 font-regular"> added </span>
+        <Unimportant> added </Unimportant>
         <Highlighted>{fileName}</Highlighted>
       </p>
       <DotSeparator />
       <TimeOfActivity days={2} />
     </div>
   );
+}
+
+interface UnimportantProps {
+  children: ReactNode;
+}
+
+function Unimportant({ children }: UnimportantProps) {
+  return <span className="text-gray-400 font-regular">{children}</span>;
 }
 
 interface TimeOfActivityProps {
@@ -91,14 +139,23 @@ function Highlighted({ children }: HighlightedProps) {
   return <span className="font-semibold text-lg">{children}</span>;
 }
 
-interface NameAvatarProps {
-  name: string;
+function AvatarOfNameWithBorder({ name }: NameAvatarProps) {
+  return <AvatarOfName name={name} hasBorder />;
 }
 
-function AvatarOfName({ name }: NameAvatarProps) {
+interface NameAvatarProps {
+  name: string;
+  hasBorder?: boolean;
+}
+
+function AvatarOfName({ name, hasBorder = false }: NameAvatarProps) {
   const nameInitial = name[0];
   return (
-    <div className="rounded-full h-10 w-10 bg-blue-400 text-gray-700 flex items-center justify-center text-lg">
+    <div
+      className={`rounded-full h-10 w-10 bg-blue-400 text-gray-700 flex items-center justify-center text-lg ${
+        hasBorder ? "border-2 border-white" : ""
+      }`}
+    >
       {nameInitial}
     </div>
   );
