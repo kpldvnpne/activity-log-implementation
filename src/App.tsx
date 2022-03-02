@@ -15,6 +15,8 @@ import {
   ReplyIcon,
   SelectorIcon,
   ChatIcon,
+  TrendingUpIcon,
+  XIcon,
 } from "@heroicons/react/solid";
 
 const defaultBoundingRect: DOMRect = {
@@ -79,7 +81,7 @@ function App(): React.ReactElement {
         />
         <div className="w-full h-full space-y-6 z-10 relative">
           <div
-            className="w-full sticky top-0 py-4"
+            className="w-full sticky top-0 z-50 py-4"
             style={{ backgroundColor: bgColor }}
           >
             <SearchInput />
@@ -113,8 +115,72 @@ function App(): React.ReactElement {
             ]}
           />
           <MessageActivityLog />
+          <MentionedInCommentActivityLog />
 
-          <MentionedInCommentActivityLog ref={lastActivityIconRef} />
+          <ActivityLog
+            icon={
+              <ActivityIcon ref={lastActivityIconRef}>
+                <TrendingUpIcon />
+              </ActivityIcon>
+            }
+            body={
+              <div className="flex flex-row items-center space-x-4">
+                <div className="flex flex-row space-x-2 items-center">
+                  <AvatarOfName name="Olivia Emmanuel" />
+                  <p>
+                    <Unimportant>Gained by </Unimportant>
+                    <Highlighted>Olivia Emmanuel</Highlighted>
+                    <Unimportant> via automatic rule </Unimportant>
+                    <Highlighted>on pull request review</Highlighted>
+                  </p>
+                </div>
+                <DotSeparator />
+                <TimeOfActivity days={8} />
+              </div>
+            }
+          />
+          <ActivityLog
+            icon={
+              <ActivityIcon>
+                <PlusIcon />
+              </ActivityIcon>
+            }
+            body={
+              <div className="flex flex-row items-center space-x-4">
+                <div className="flex flex-row items-center space-x-3">
+                  <AvatarOfName name="Bantlee Clinton" />
+                  <p>
+                    <Highlighted>Bantlee Clinton</Highlighted>
+                    <Unimportant> applied </Unimportant>
+                    <Highlighted>Essential</Highlighted>
+                    <Unimportant> tag</Unimportant>
+                  </p>
+                </div>
+                <DotSeparator />
+                <TimeOfActivity days={10} />
+              </div>
+            }
+          />
+          <ActivityLog
+            icon={
+              <ActivityIcon>
+                <XIcon />
+              </ActivityIcon>
+            }
+            body={
+              <div className="flex flex-row items-center space-x-4">
+                <div className="flex flex-row items-center space-x-3">
+                  <AvatarOfName name="William Cooper" />
+                  <p>
+                    <Unimportant>Assignment closed by </Unimportant>
+                    <Highlighted>William Cooper</Highlighted>
+                  </p>
+                </div>
+                <DotSeparator />
+                <TimeOfActivity days={12} />
+              </div>
+            }
+          />
         </div>
       </div>
     </div>
