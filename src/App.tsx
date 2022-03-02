@@ -11,7 +11,7 @@ function App(): React.ReactElement {
     <div style={{ backgroundColor: "#F5F6F7" }} className="h-screen font-sans">
       <div className="w-5/6 xl:w-4/6  mx-auto space-y-6 py-4">
         <SearchInput />
-        <ActivityLogHeader />
+        <ActivityLogsHeader />
         <ActivityLog
           icon={
             <ActivityIcon>
@@ -228,16 +228,16 @@ function ActivityIcon({ children, important = false }: ActivityIconProps) {
   );
 }
 
-function ActivityLogHeader() {
+function ActivityLogsHeader() {
   return (
     <div className="flex flex-row justify-between items-center">
-      <ActivityLogTitle />
-      <ActivityLogActions />
+      <ActivityLogsTitle />
+      <ActivityLogsHeaderActions />
     </div>
   );
 }
 
-function ActivityLogActions() {
+function ActivityLogsHeaderActions() {
   return (
     <div className="text-gray-400 flex flex-row space-x-4">
       <ShowAllActivityToggle />
@@ -271,7 +271,7 @@ function Switch() {
   );
 }
 
-function ActivityLogTitle() {
+function ActivityLogsTitle() {
   return <h2 className="text-3xl font-bold">Activity logs</h2>;
 }
 
