@@ -25,32 +25,19 @@ function App(): React.ReactElement {
             />
           }
         />
-        <ActivityLog
-          icon={
-            <ActivityIcon important>
-              <CalendarIcon />
-            </ActivityIcon>
-          }
-          body={
-            <Card>
-              <div className="p-4 flex flex-row justify-between">
-                <div className="border-l-2 border-l-yellow-500 py-2 pl-6">
-                  <h2 className="font-semibold">Design Review with Timeless</h2>
-                  <p className="text-gray-400">
-                    10:00 - 11:00 AM, Mumbai Maharastra
-                  </p>
-                </div>
-                <div className="flex flex-row space-x-2 items-center">
-                  <div className="flex flex-row -space-x-3">
-                    <AvatarOfNameWithBorder name="Brianna Clinton" />
-                    <AvatarOfNameWithBorder name="Melissa Pinto" />
-                    <AvatarOfNameWithBorder name="Olivia Emmanuel" />
-                  </div>
-                  <span className="text-gray-600">and 4 others</span>
-                </div>
-              </div>
-            </Card>
-          }
+        <EventActivityLog
+          eventName="Design Review with Timeless"
+          startTime="10:00"
+          endTime="11:00 AM"
+          location="Mumbai Maharastra"
+          namesOfParticipants={[
+            "Brianna Clinton",
+            "Melissa Pinto",
+            "Olivia Emmanuel",
+            "abc",
+            "def",
+            "ghi",
+          ]}
         />
       </div>
     </div>
@@ -61,6 +48,69 @@ export default App;
 
 interface CardProps {
   children: ReactNode;
+}
+
+interface EventActivityLogProps {
+  eventName: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  namesOfParticipants: Array<string>;
+}
+
+function EventActivityLog({
+  eventName,
+  startTime,
+  endTime,
+  location,
+  namesOfParticipants,
+}: EventActivityLogProps) {
+  return (
+    <ActivityLog
+      icon={
+        <ActivityIcon important>
+          <CalendarIcon />
+        </ActivityIcon>
+      }
+      body={
+        <Card>
+          <div className="p-4 flex flex-row justify-between items-start">
+            <div className="border-l-2 border-l-yellow-500 py-2 pl-6">
+              <h2 className="font-semibold">{eventName}</h2>
+              <p className="text-gray-400">
+                {startTime} - {endTime}, {location}
+              </p>
+            </div>
+            <StackedAvatarsOfPeople names={namesOfParticipants} />
+          </div>
+        </Card>
+      }
+    />
+  );
+}
+
+interface StackedAvatarsOfPeopleProps {
+  names: Array<string>;
+}
+
+function StackedAvatarsOfPeople({ names }: StackedAvatarsOfPeopleProps) {
+  const namesToShow = names.length <= 3 ? names : names.slice(0, 3);
+  const remainingNamesCount = names.length <= 3 ? 0 : names.length - 3;
+  return (
+    <div className="flex flex-row space-x-2 items-center">
+      <div className="flex flex-row -space-x-3">
+        {namesToShow.map((name) => (
+          <AvatarOfNameWithBorder name={name} />
+        ))}
+      </div>
+      {remainingNamesCount > 0 && (
+        <span className="text-gray-600">
+          and {remainingNamesCount}{" "}
+          {remainingNamesCount > 1 ? "others" : "other"}
+        </span>
+      )}
+    </div>
+  );
 }
 
 function Card({ children }: CardProps) {
