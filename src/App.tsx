@@ -119,7 +119,7 @@ function App(): React.ReactElement {
 
           <ActivityLog
             icon={
-              <ActivityIcon ref={lastActivityIconRef}>
+              <ActivityIcon>
                 <TrendingUpIcon />
               </ActivityIcon>
             }
@@ -163,7 +163,7 @@ function App(): React.ReactElement {
           />
           <ActivityLog
             icon={
-              <ActivityIcon>
+              <ActivityIcon ref={lastActivityIconRef}>
                 <XIcon />
               </ActivityIcon>
             }
