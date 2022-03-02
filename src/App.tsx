@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode } from "react";
+import React, { ReactElement, ReactNode, useRef } from "react";
 import {
   DotsHorizontalIcon,
   AdjustmentsIcon,
@@ -6,6 +6,7 @@ import {
   CalendarIcon,
   MailIcon,
   ReplyIcon,
+  SelectorIcon,
 } from "@heroicons/react/solid";
 
 function App(): React.ReactElement {
@@ -67,6 +68,8 @@ function MessageActivityLog() {
     { who: "abc", whenInDaysAgo: 123, text: "abc" },
   ];
 
+  const numberOfHiddenMessagesInThread = messages.length - 1;
+
   return (
     <ActivityLog
       icon={
@@ -75,16 +78,26 @@ function MessageActivityLog() {
         </ActivityIcon>
       }
       body={
-        <StackedDisplay>
-          {messages.map((message, index) => (
-            <MessageCard
-              key={index}
-              who={message.who}
-              when={message.whenInDaysAgo}
-              message={message.text}
-            />
-          ))}
-        </StackedDisplay>
+        <div className="w-full space-y-4">
+          <StackedDisplay>
+            {messages.map((message, index) => (
+              <MessageCard
+                key={index}
+                who={message.who}
+                when={message.whenInDaysAgo}
+                message={message.text}
+              />
+            ))}
+          </StackedDisplay>
+          <div className="text-blue-600 flex flex-row space-x-4 items-center cursor-pointer">
+            <IconButton>
+              <SelectorIcon />
+            </IconButton>
+            <div>
+              View {numberOfHiddenMessagesInThread} more threads from this week
+            </div>
+          </div>
+        </div>
       }
     />
   );
@@ -96,8 +109,17 @@ interface StackedDisplayProps {
 
 function StackedDisplay({ children }: StackedDisplayProps) {
   const firstChild = children[0];
+  const firstDivRef = useRef<HTMLDivElement>(null);
+  const lastDivRef = useRef<HTMLDivElement>(null);
+
+  const componentPageBottom =
+    lastDivRef.current?.getBoundingClientRect().bottom ?? 0;
+  const componentPageTop =
+    firstDivRef.current?.getBoundingClientRect().top ?? 0;
+  const height = componentPageBottom - componentPageTop;
+
   return (
-    <div className="relative z-0 h-auto w-full">
+    <div className="relative z-0 h-auto w-full" style={{ height }}>
       {children.map((child, index) => (
         <div
           className={`absolute w-full`}
@@ -107,6 +129,13 @@ function StackedDisplay({ children }: StackedDisplayProps) {
             zIndex: -10 * index,
             transform: `translateY(${index * 5}%)`,
           }}
+          ref={
+            index === 0
+              ? firstDivRef
+              : index === children.length - 1
+              ? lastDivRef
+              : undefined
+          }
         >
           {firstChild}
         </div>
@@ -349,8 +378,20 @@ function ActivityLogsHeaderActions() {
 
 function AdjustmentIconButton() {
   return (
-    <div className="w-10 h-10 rounded-full border-2 border-gray-300 p-1 bg-white">
+    <IconButton>
       <AdjustmentsIcon />
+    </IconButton>
+  );
+}
+
+interface IconButtonProps {
+  children: ReactElement;
+}
+
+function IconButton({ children }: IconButtonProps) {
+  return (
+    <div className="w-10 h-10 rounded-full border-2 border-gray-300 p-1 bg-white">
+      {children}
     </div>
   );
 }
