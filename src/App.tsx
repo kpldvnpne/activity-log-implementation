@@ -4,6 +4,8 @@ import {
   AdjustmentsIcon,
   PlusIcon,
   CalendarIcon,
+  MailIcon,
+  ReplyIcon,
 } from "@heroicons/react/solid";
 
 function App(): React.ReactElement {
@@ -39,6 +41,24 @@ function App(): React.ReactElement {
             "ghi",
           ]}
         />
+        <ActivityLog
+          icon={
+            <ActivityIcon important>
+              <MailIcon />
+            </ActivityIcon>
+          }
+          body={
+            <MessageCard
+              who="Brianna Clinton"
+              when={4}
+              message="Just checking in to see if I can help your team at timeless in anyway.
+          Please don’t hesistate to reach out and would love to chat. We shipped
+          out a bunch of exciting new updates in Timeless (such as Timeless
+          links to share with anyone outside your org) and you can find more
+          details here."
+            />
+          }
+        />
       </div>
     </div>
   );
@@ -56,6 +76,38 @@ interface EventActivityLogProps {
   endTime: string;
   location: string;
   namesOfParticipants: Array<string>;
+}
+
+interface MessageCardProps {
+  who: string;
+  when: number;
+  message: string;
+}
+
+function MessageCard({ who, when, message }: MessageCardProps) {
+  return (
+    <Card>
+      <div className="p-6 pr-12 space-y-3">
+        <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-row space-x-4 items-center">
+            <div className="flex flex-row space-x-2 items-center">
+              <AvatarOfName name={who} />
+              <Highlighted>{who}</Highlighted>
+            </div>
+            <DotSeparator />
+            <TimeOfActivity days={when} />
+          </div>
+          <div className="flex flex-row space-x-4 text-gray-400">
+            <ReplyIcon className="w-6 h-6" />
+            <DotsHorizontalIcon className="w-6 h-6" />
+          </div>
+        </div>
+        <p className="text-justify text-md leading-6 text-gray-800 font-regular">
+          {message}
+        </p>
+      </div>
+    </Card>
+  );
 }
 
 function EventActivityLog({
@@ -202,7 +254,7 @@ function AvatarOfName({ name, hasBorder = false }: NameAvatarProps) {
   const nameInitial = name[0];
   return (
     <div
-      className={`rounded-full h-10 w-10 bg-blue-400 text-gray-700 flex items-center justify-center text-lg ${
+      className={`rounded-full h-10 w-10 bg-blue-400 text-gray-700 flex flex-shrink-0 items-center justify-center text-lg ${
         hasBorder ? "border-2 border-white" : ""
       }`}
     >
@@ -221,7 +273,7 @@ function ActivityIcon({ children, important = false }: ActivityIconProps) {
   const backgroundColorClass = important ? "bg-blue-600" : "bg-gray-300";
   return (
     <div
-      className={`rounded-full ${backgroundColorClass} ${textColorClass} h-10 w-10 p-2`}
+      className={`rounded-full ${backgroundColorClass} ${textColorClass} h-10 w-10 flex items-center justify-center flex-shrink-0`}
     >
       {children}
     </div>
