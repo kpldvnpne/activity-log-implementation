@@ -1,4 +1,10 @@
-import React, { ReactElement, ReactNode, useRef } from "react";
+import React, {
+  ReactElement,
+  ReactNode,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   DotsHorizontalIcon,
   AdjustmentsIcon,
@@ -103,6 +109,19 @@ function MessageActivityLog() {
   );
 }
 
+function useWindowSize() {
+  const [size, setSize] = useState([0, 0]);
+  useLayoutEffect(() => {
+    function updateSize() {
+      setSize([window.innerWidth, window.innerHeight]);
+    }
+    window.addEventListener("resize", updateSize);
+    updateSize();
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+  return size;
+}
+
 interface StackedDisplayProps {
   children: Array<ReactElement>;
 }
@@ -111,6 +130,8 @@ function StackedDisplay({ children }: StackedDisplayProps) {
   const firstChild = children[0];
   const firstDivRef = useRef<HTMLDivElement>(null);
   const lastDivRef = useRef<HTMLDivElement>(null);
+
+  useWindowSize();
 
   const componentPageBottom =
     lastDivRef.current?.getBoundingClientRect().bottom ?? 0;
