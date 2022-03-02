@@ -69,7 +69,7 @@ function App(): React.ReactElement {
       className="h-screen font-sans overflow-y-scroll"
     >
       <div
-        className="w-full xl:w-4/6 mx-auto px-2 py-4 relative"
+        className="w-full xl:w-4/6 mx-auto px-2 pb-4 relative"
         ref={parentDivRef}
       >
         <TimelineLine
@@ -78,7 +78,12 @@ function App(): React.ReactElement {
           parentRef={parentDivRef}
         />
         <div className="w-full h-full space-y-6 z-10 relative">
-          <SearchInput />
+          <div
+            className="w-full sticky top-0 py-4"
+            style={{ backgroundColor: bgColor }}
+          >
+            <SearchInput />
+          </div>
           <ActivityLogsHeader />
           <ActivityLog
             icon={
