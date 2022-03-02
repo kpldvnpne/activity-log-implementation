@@ -109,31 +109,7 @@ function App(): React.ReactElement {
           />
           <MessageActivityLog />
 
-          <ActivityLog
-            icon={
-              <ActivityIcon important ref={lastActivityIconRef}>
-                <ChatIcon />
-              </ActivityIcon>
-            }
-            body={
-              <div className="space-y-3">
-                <MentionedInCommentActivityHeader />
-                <Comment />
-                <div className="flex flex-row">
-                  <span className="text-gray-500 w-8 h-8 rotate-180">
-                    <ReplyIcon />
-                  </span>
-                  <div className="space-x-3 flex flex-row items-center">
-                    <StackedAvatarsOfPeople
-                      names={["Sam Miguel", "Brianna Clinton"]}
-                      color="background"
-                    />
-                    <span className="text-blue-600">View 6 more replies</span>
-                  </div>
-                </div>
-              </div>
-            }
-          />
+          <MentionedInCommentActivityLog ref={lastActivityIconRef} />
         </div>
       </div>
     </div>
@@ -194,6 +170,38 @@ const MessageActivityLog = React.forwardRef<HTMLDivElement, {}>((_, ref) => {
     />
   );
 });
+
+const MentionedInCommentActivityLog = React.forwardRef<HTMLDivElement>(
+  (_, ref) => {
+    return (
+      <ActivityLog
+        icon={
+          <ActivityIcon important ref={ref}>
+            <ChatIcon />
+          </ActivityIcon>
+        }
+        body={
+          <div className="space-y-3">
+            <MentionedInCommentActivityHeader />
+            <Comment />
+            <div className="flex flex-row">
+              <span className="text-gray-500 w-8 h-8 rotate-180">
+                <ReplyIcon />
+              </span>
+              <div className="space-x-3 flex flex-row items-center">
+                <StackedAvatarsOfPeople
+                  names={["Sam Miguel", "Brianna Clinton"]}
+                  color="background"
+                />
+                <span className="text-blue-600">View 6 more replies</span>
+              </div>
+            </div>
+          </div>
+        }
+      />
+    );
+  }
+);
 
 function Comment() {
   return (
