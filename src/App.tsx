@@ -14,6 +14,7 @@ import {
   MailIcon,
   ReplyIcon,
   SelectorIcon,
+  ChatIcon,
 } from "@heroicons/react/solid";
 
 const defaultBoundingRect: DOMRect = {
@@ -31,20 +32,23 @@ const defaultBoundingRect: DOMRect = {
 interface TimelineProps {
   startRef: RefObject<HTMLDivElement>;
   endRef: RefObject<HTMLDivElement>;
+  parentRef: RefObject<HTMLDivElement>;
 }
 
-function TimelineLine({ startRef, endRef }: TimelineProps) {
+function TimelineLine({ startRef, endRef, parentRef }: TimelineProps) {
   const startBox =
     startRef.current?.getBoundingClientRect() ?? defaultBoundingRect;
   const endBox = endRef.current?.getBoundingClientRect() ?? defaultBoundingRect;
+  const parentBoundingBox =
+    parentRef.current?.getBoundingClientRect() ?? defaultBoundingRect;
 
   return (
     <div
       className="absolute w-[3px] bg-gray-200 z-0"
       style={{
-        top: startBox.top + startBox.height / 2,
-        left: startBox.left + startBox.width / 2 - 2,
-        bottom: window.innerHeight - (endBox.top + endBox.height / 2),
+        top: startBox.top + startBox.height / 2 - parentBoundingBox.top,
+        left: startBox.left + startBox.width / 2 - 2 - parentBoundingBox.left,
+        bottom: parentBoundingBox.height - (endBox.top + endBox.height / 2),
       }}
     />
   );
@@ -55,15 +59,23 @@ const bgColor = "#F5F6F7";
 function App(): React.ReactElement {
   const firstActivityIconRef = useRef<HTMLDivElement>(null);
   const lastActivityIconRef = useRef<HTMLDivElement>(null);
+  const parentDivRef = useRef<HTMLDivElement>(null);
 
   useWindowSize();
 
   return (
-    <div style={{ backgroundColor: bgColor }} className="h-screen font-sans">
-      <div className="w-5/6 xl:w-4/6 mx-auto py-4">
+    <div
+      style={{ backgroundColor: bgColor }}
+      className="h-screen font-sans overflow-y-scroll"
+    >
+      <div
+        className="w-full xl:w-4/6 mx-auto px-2 py-4 relative"
+        ref={parentDivRef}
+      >
         <TimelineLine
           startRef={firstActivityIconRef}
           endRef={lastActivityIconRef}
+          parentRef={parentDivRef}
         />
         <div className="w-full h-full space-y-6 z-10 relative">
           <SearchInput />
@@ -95,7 +107,33 @@ function App(): React.ReactElement {
               "ghi",
             ]}
           />
-          <MessageActivityLog ref={lastActivityIconRef} />
+          <MessageActivityLog />
+
+          <ActivityLog
+            icon={
+              <ActivityIcon important ref={lastActivityIconRef}>
+                <ChatIcon />
+              </ActivityIcon>
+            }
+            body={
+              <div className="space-y-3">
+                <MentionedInCommentActivityHeader />
+                <Comment />
+                <div className="flex flex-row">
+                  <span className="text-gray-500 w-8 h-8 rotate-180">
+                    <ReplyIcon />
+                  </span>
+                  <div className="space-x-3 flex flex-row items-center">
+                    <StackedAvatarsOfPeople
+                      names={["Sam Miguel", "Brianna Clinton"]}
+                      color="background"
+                    />
+                    <span className="text-blue-600">View 6 more replies</span>
+                  </div>
+                </div>
+              </div>
+            }
+          />
         </div>
       </div>
     </div>
@@ -156,6 +194,35 @@ const MessageActivityLog = React.forwardRef<HTMLDivElement, {}>((_, ref) => {
     />
   );
 });
+
+function Comment() {
+  return (
+    <Card>
+      <div className="pl-6 pr-12 py-4">
+        <p className="text-gray-700 text-justify">
+          When a person has access to both the intuitive, creative and visual
+          right brain, and the analytical, logical, verbal left brain, then the
+          whole brain is working. <Highlighted>@Olivia_emmanuel</Highlighted>
+        </p>
+      </div>
+    </Card>
+  );
+}
+
+function MentionedInCommentActivityHeader() {
+  return (
+    <div className="flex flex-row items-center space-x-3">
+      <AvatarOfName name="Mellissa Pinto" />
+      <p>
+        <Highlighted>Mellissa Pinto</Highlighted>
+        <Unimportant> mentioned you in a comment in </Unimportant>
+        <Highlighted>Item 235667</Highlighted>
+      </p>
+      <DotSeparator />
+      <TimeOfActivity days={7} />
+    </div>
+  );
+}
 
 function useWindowSize() {
   const [size, setSize] = useState([0, 0]);
@@ -286,16 +353,20 @@ function EventActivityLog({
 
 interface StackedAvatarsOfPeopleProps {
   names: Array<string>;
+  color?: "background" | "white";
 }
 
-function StackedAvatarsOfPeople({ names }: StackedAvatarsOfPeopleProps) {
+function StackedAvatarsOfPeople({
+  names,
+  color = "white",
+}: StackedAvatarsOfPeopleProps) {
   const namesToShow = names.length <= 3 ? names : names.slice(0, 3);
   const remainingNamesCount = names.length <= 3 ? 0 : names.length - 3;
   return (
     <div className="flex flex-row space-x-2 items-center">
       <div className="flex flex-row -space-x-3">
         {namesToShow.map((name) => (
-          <AvatarOfNameWithBorder name={name} />
+          <AvatarOfNameWithBorder name={name} borderColor={color} />
         ))}
       </div>
       {remainingNamesCount > 0 && (
@@ -385,25 +456,40 @@ interface HighlightedProps {
 }
 
 function Highlighted({ children }: HighlightedProps) {
-  return <span className="font-semibold text-lg">{children}</span>;
+  return <span className="font-semibold text-md">{children}</span>;
 }
 
-function AvatarOfNameWithBorder({ name }: NameAvatarProps) {
-  return <AvatarOfName name={name} hasBorder />;
+interface AvatarOfNameWithBorderProps {
+  name: string;
+  borderColor: "background" | "white";
+}
+
+function AvatarOfNameWithBorder({
+  name,
+  borderColor,
+}: AvatarOfNameWithBorderProps) {
+  return <AvatarOfName name={name} borderColor={borderColor} />;
 }
 
 interface NameAvatarProps {
   name: string;
-  hasBorder?: boolean;
+  borderColor?: AvatarOfNameWithBorderProps["borderColor"];
 }
 
-function AvatarOfName({ name, hasBorder = false }: NameAvatarProps) {
+function AvatarOfName({ name, borderColor }: NameAvatarProps) {
   const nameInitial = name[0];
   return (
     <div
-      className={`rounded-full h-10 w-10 bg-blue-400 text-gray-700 flex flex-shrink-0 items-center justify-center text-lg ${
-        hasBorder ? "border-2 border-white" : ""
-      }`}
+      className={`rounded-full h-10 w-10 bg-blue-400 text-gray-700 flex flex-shrink-0 items-center justify-center text-lg`}
+      style={{
+        borderColor:
+          borderColor === "white"
+            ? "#FFFFFF"
+            : borderColor === "background"
+            ? bgColor
+            : undefined,
+        borderWidth: borderColor ? 2 : "none",
+      }}
     >
       {nameInitial}
     </div>
