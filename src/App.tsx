@@ -40,7 +40,7 @@ function TimelineLine({ startRef, endRef }: TimelineProps) {
 
   return (
     <div
-      className="absolute w-1 bg-gray-400 z-0"
+      className="absolute w-[3px] bg-gray-200 z-0"
       style={{
         top: startBox.top + startBox.height / 2,
         left: startBox.left + startBox.width / 2 - 2,
@@ -423,7 +423,7 @@ const ActivityIcon = React.forwardRef<HTMLDivElement, ActivityIconProps>(
       <div
         ref={ref}
         style={{ borderColor: bgColor }}
-        className={`rounded-full ${backgroundColorClass} ${textColorClass} h-10 w-10 flex items-center justify-center flex-shrink-0 p-1 border-2`}
+        className={`rounded-full ${backgroundColorClass} ${textColorClass} h-10 w-10 flex items-center justify-center flex-shrink-0 p-1 border-4`}
       >
         {children}
       </div>
