@@ -1,6 +1,7 @@
 import React, {
   ReactElement,
   ReactNode,
+  RefObject,
   useLayoutEffect,
   useRef,
   useState,
@@ -15,40 +16,87 @@ import {
   SelectorIcon,
 } from "@heroicons/react/solid";
 
-function App(): React.ReactElement {
+const defaultBoundingRect: DOMRect = {
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  width: 0,
+  height: 0,
+  x: 0,
+  y: 0,
+  toJSON: () => ({}),
+};
+
+interface TimelineProps {
+  startRef: RefObject<HTMLDivElement>;
+  endRef: RefObject<HTMLDivElement>;
+}
+
+function TimelineLine({ startRef, endRef }: TimelineProps) {
+  const startBox =
+    startRef.current?.getBoundingClientRect() ?? defaultBoundingRect;
+  const endBox = endRef.current?.getBoundingClientRect() ?? defaultBoundingRect;
+
   return (
-    <div style={{ backgroundColor: "#F5F6F7" }} className="h-screen font-sans">
-      <div className="w-5/6 xl:w-4/6  mx-auto space-y-6 py-4">
-        <SearchInput />
-        <ActivityLogsHeader />
-        <ActivityLog
-          icon={
-            <ActivityIcon>
-              <PlusIcon />
-            </ActivityIcon>
-          }
-          body={
-            <FileAddedActivity
-              personName="Steve Matthew"
-              fileName="file_documents.csv"
-            />
-          }
+    <div
+      className="absolute w-1 bg-gray-400 z-0"
+      style={{
+        top: startBox.top + startBox.height / 2,
+        left: startBox.left + startBox.width / 2 - 2,
+        bottom: window.innerHeight - (endBox.top + endBox.height / 2),
+      }}
+    />
+  );
+}
+
+const bgColor = "#F5F6F7";
+
+function App(): React.ReactElement {
+  const firstActivityIconRef = useRef<HTMLDivElement>(null);
+  const lastActivityIconRef = useRef<HTMLDivElement>(null);
+
+  useWindowSize();
+
+  return (
+    <div style={{ backgroundColor: bgColor }} className="h-screen font-sans">
+      <div className="w-5/6 xl:w-4/6 mx-auto py-4">
+        <TimelineLine
+          startRef={firstActivityIconRef}
+          endRef={lastActivityIconRef}
         />
-        <EventActivityLog
-          eventName="Design Review with Timeless"
-          startTime="10:00"
-          endTime="11:00 AM"
-          location="Mumbai Maharastra"
-          namesOfParticipants={[
-            "Brianna Clinton",
-            "Melissa Pinto",
-            "Olivia Emmanuel",
-            "abc",
-            "def",
-            "ghi",
-          ]}
-        />
-        <MessageActivityLog />
+        <div className="w-full h-full space-y-6 z-10 relative">
+          <SearchInput />
+          <ActivityLogsHeader />
+          <ActivityLog
+            icon={
+              <ActivityIcon ref={firstActivityIconRef}>
+                <PlusIcon />
+              </ActivityIcon>
+            }
+            body={
+              <FileAddedActivity
+                personName="Steve Matthew"
+                fileName="file_documents.csv"
+              />
+            }
+          />
+          <EventActivityLog
+            eventName="Design Review with Timeless"
+            startTime="10:00"
+            endTime="11:00 AM"
+            location="Mumbai Maharastra"
+            namesOfParticipants={[
+              "Brianna Clinton",
+              "Melissa Pinto",
+              "Olivia Emmanuel",
+              "abc",
+              "def",
+              "ghi",
+            ]}
+          />
+          <MessageActivityLog ref={lastActivityIconRef} />
+        </div>
       </div>
     </div>
   );
@@ -62,7 +110,7 @@ interface Message {
   text: string;
 }
 
-function MessageActivityLog() {
+const MessageActivityLog = React.forwardRef<HTMLDivElement, {}>((_, ref) => {
   const messages: Message[] = [
     {
       who: "Brianna Clinton",
@@ -79,7 +127,7 @@ function MessageActivityLog() {
   return (
     <ActivityLog
       icon={
-        <ActivityIcon important>
+        <ActivityIcon important ref={ref}>
           <MailIcon />
         </ActivityIcon>
       }
@@ -107,7 +155,7 @@ function MessageActivityLog() {
       }
     />
   );
-}
+});
 
 function useWindowSize() {
   const [size, setSize] = useState([0, 0]);
@@ -367,17 +415,21 @@ interface ActivityIconProps {
   children: ReactNode;
 }
 
-function ActivityIcon({ children, important = false }: ActivityIconProps) {
-  const textColorClass = important ? "text-white" : "text-gray-700";
-  const backgroundColorClass = important ? "bg-blue-600" : "bg-gray-300";
-  return (
-    <div
-      className={`rounded-full ${backgroundColorClass} ${textColorClass} h-10 w-10 flex items-center justify-center flex-shrink-0 p-1`}
-    >
-      {children}
-    </div>
-  );
-}
+const ActivityIcon = React.forwardRef<HTMLDivElement, ActivityIconProps>(
+  ({ children, important = false }, ref) => {
+    const textColorClass = important ? "text-white" : "text-gray-700";
+    const backgroundColorClass = important ? "bg-blue-600" : "bg-gray-300";
+    return (
+      <div
+        ref={ref}
+        style={{ borderColor: bgColor }}
+        className={`rounded-full ${backgroundColorClass} ${textColorClass} h-10 w-10 flex items-center justify-center flex-shrink-0 p-1 border-2`}
+      >
+        {children}
+      </div>
+    );
+  }
+);
 
 function ActivityLogsHeader() {
   return (
