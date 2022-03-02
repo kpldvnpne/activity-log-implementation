@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactElement, ReactNode } from "react";
 import {
   DotsHorizontalIcon,
   AdjustmentsIcon,
@@ -41,24 +41,7 @@ function App(): React.ReactElement {
             "ghi",
           ]}
         />
-        <ActivityLog
-          icon={
-            <ActivityIcon important>
-              <MailIcon />
-            </ActivityIcon>
-          }
-          body={
-            <MessageCard
-              who="Brianna Clinton"
-              when={4}
-              message="Just checking in to see if I can help your team at timeless in anyway.
-          Please don’t hesistate to reach out and would love to chat. We shipped
-          out a bunch of exciting new updates in Timeless (such as Timeless
-          links to share with anyone outside your org) and you can find more
-          details here."
-            />
-          }
-        />
+        <MessageActivityLog />
       </div>
     </div>
   );
@@ -66,16 +49,70 @@ function App(): React.ReactElement {
 
 export default App;
 
-interface CardProps {
-  children: ReactNode;
+interface Message {
+  who: string;
+  whenInDaysAgo: number;
+  text: string;
 }
 
-interface EventActivityLogProps {
-  eventName: string;
-  startTime: string;
-  endTime: string;
-  location: string;
-  namesOfParticipants: Array<string>;
+function MessageActivityLog() {
+  const messages: Message[] = [
+    {
+      who: "Brianna Clinton",
+      whenInDaysAgo: 4,
+      text: `Just checking in to see if I can help your team at timeless in anyway. Please don’t hesistate to reach out and would love to chat. We shipped out a bunch of exciting new updates in Timeless (such as Timeless links to share with anyone outside your org) and you can find more details here.`,
+    },
+    { who: "abc", whenInDaysAgo: 123, text: "abc" },
+    { who: "abc", whenInDaysAgo: 123, text: "abc" },
+    { who: "abc", whenInDaysAgo: 123, text: "abc" },
+  ];
+
+  return (
+    <ActivityLog
+      icon={
+        <ActivityIcon important>
+          <MailIcon />
+        </ActivityIcon>
+      }
+      body={
+        <StackedDisplay>
+          {messages.map((message, index) => (
+            <MessageCard
+              key={index}
+              who={message.who}
+              when={message.whenInDaysAgo}
+              message={message.text}
+            />
+          ))}
+        </StackedDisplay>
+      }
+    />
+  );
+}
+
+interface StackedDisplayProps {
+  children: Array<ReactElement>;
+}
+
+function StackedDisplay({ children }: StackedDisplayProps) {
+  const firstChild = children[0];
+  return (
+    <div className="relative z-0 h-auto w-full">
+      {children.map((child, index) => (
+        <div
+          className={`absolute w-full`}
+          style={{
+            paddingLeft: 8 * index,
+            paddingRight: 8 * index,
+            zIndex: -10 * index,
+            transform: `translateY(${index * 5}%)`,
+          }}
+        >
+          {firstChild}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 interface MessageCardProps {
@@ -108,6 +145,14 @@ function MessageCard({ who, when, message }: MessageCardProps) {
       </div>
     </Card>
   );
+}
+
+interface EventActivityLogProps {
+  eventName: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  namesOfParticipants: Array<string>;
 }
 
 function EventActivityLog({
@@ -163,6 +208,10 @@ function StackedAvatarsOfPeople({ names }: StackedAvatarsOfPeopleProps) {
       )}
     </div>
   );
+}
+
+interface CardProps {
+  children: ReactNode;
 }
 
 function Card({ children }: CardProps) {
@@ -273,7 +322,7 @@ function ActivityIcon({ children, important = false }: ActivityIconProps) {
   const backgroundColorClass = important ? "bg-blue-600" : "bg-gray-300";
   return (
     <div
-      className={`rounded-full ${backgroundColorClass} ${textColorClass} h-10 w-10 flex items-center justify-center flex-shrink-0`}
+      className={`rounded-full ${backgroundColorClass} ${textColorClass} h-10 w-10 flex items-center justify-center flex-shrink-0 p-1`}
     >
       {children}
     </div>
